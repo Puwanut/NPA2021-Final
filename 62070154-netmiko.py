@@ -1,6 +1,6 @@
 from netmiko import ConnectHandler
 
-device_ip = '10.0.15.101'
+device_ip = '10.0.15.110'
 username = 'admin'
 password = 'cisco'
 
