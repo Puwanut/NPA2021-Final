@@ -32,6 +32,8 @@ with ConnectHandler(**device_params) as ssh:
         # delete loopback
         result = ssh.send_config_set(cmd_deletelo)
     ssh.save_config()
+
+    print(ssh.send_command('sh ip int br'))
         
 
 
