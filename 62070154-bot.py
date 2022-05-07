@@ -13,7 +13,7 @@ basicauth = ("admin", "cisco")
 
 # --- Webex API --- #
 webex_accesstoken = '#access-token'
-webex_roomid = 'Y2lzY29zcGFyazovL3VybjpURUFNOnVzLXdlc3QtMl9yL1JPT00vY2U2ZTk4YTAtY2RkNy0xMWVjLTgxZTktNGYyNmEzZmYyMGZi'
+webex_roomid = 'Y2lzY29zcGFyazovL3VzL1JPT00vNjUwODkzMjAtY2QxOS0xMWVjLWE1NGUtNGQ2MmNhMWM4YmVl'
 webex_baseurl = 'https://webexapis.com/v1/messages'
 webex_headers = {
     'Authorization': 'Bearer {}'.format(webex_accesstoken),
@@ -31,11 +31,11 @@ def getOpeStatusLoopback():
         return "Loopback62070154 - Operational status is " + response_json["ietf-interfaces:interface"]["oper-status"]
 
 def chatbot():
+    webex_getParams = {
+        "roomId": webex_roomid,
+        "max": 1
+    }
     while True:
-        webex_getParams = {
-            "roomId": webex_roomid,
-            "max": 1
-        }
         response = requests.get(webex_baseurl, headers=webex_headers, params=webex_getParams).json()
         if len(response["items"]) > 0:
             if response["items"][0]["text"] == "62070154":
