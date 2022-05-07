@@ -12,8 +12,8 @@ basicauth = ("admin", "cisco")
 # --- RestConf --- #
 
 # --- Webex API --- #
-webex_accesstoken = '#access-token'
-webex_roomid = 'Y2lzY29zcGFyazovL3VzL1JPT00vNjUwODkzMjAtY2QxOS0xMWVjLWE1NGUtNGQ2MmNhMWM4YmVl'
+webex_accesstoken = 'ZDQ4YzhlN2UtNjhmYi00NjA2LTk3NTQtNGQyNGU5NmFjZTVkMTE4YzQ1NWYtMmY3_P0A1_9a8a306f-5965-407f-a4b3-63b85af39c54'
+webex_roomid = 'Y2lzY29zcGFyazovL3VybjpURUFNOnVzLXdlc3QtMl9yL1JPT00vY2U2ZTk4YTAtY2RkNy0xMWVjLTgxZTktNGYyNmEzZmYyMGZi'
 webex_baseurl = 'https://webexapis.com/v1/messages'
 webex_headers = {
     'Authorization': 'Bearer {}'.format(webex_accesstoken),
@@ -38,7 +38,9 @@ def chatbot():
     while True:
         response = requests.get(webex_baseurl, headers=webex_headers, params=webex_getParams).json()
         if len(response["items"]) > 0:
-            if response["items"][0]["text"] == "62070154":
+            last_msg = response["items"][0]["text"]
+            print("Received message: " + last_msg)
+            if last_msg == "62070154":
                 webex_postParams = {
                     "roomId": webex_roomid,
                     "text": getOpeStatusLoopback()
