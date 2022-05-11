@@ -1,10 +1,12 @@
 import json
 import time
+from urllib import response
 import requests
 requests.packages.urllib3.disable_warnings()
 
 # --- RestConf --- #
 api_url = "https://10.0.15.110/restconf/data/ietf-interfaces:interfaces-state/interface=Loopback62070154"
+api_url_set = "https://10.0.15.110/restconf/data/ietf-interfaces:interfaces/interface=Loopback62070154/enabled=True"
 headers = { "Accept": "application/yang-data+json", 
             "Content-type":"application/yang-data+json"
            }
@@ -12,8 +14,8 @@ basicauth = ("admin", "cisco")
 # --- RestConf --- #
 
 # --- Webex API --- #
-webex_accesstoken = '#access-token'
-webex_roomid = 'Y2lzY29zcGFyazovL3VzL1JPT00vNjUwODkzMjAtY2QxOS0xMWVjLWE1NGUtNGQ2MmNhMWM4YmVl'
+webex_accesstoken = 'ODBhYjk4MzItMjAxMi00YzgyLWIwOWItZWVjZGM2OTYxZDNjYTZlZDk3Y2UtZGQw_P0A1_9a8a306f-5965-407f-a4b3-63b85af39c54'
+webex_roomid = 'Y2lzY29zcGFyazovL3VybjpURUFNOnVzLXdlc3QtMl9yL1JPT00vY2U2ZTk4YTAtY2RkNy0xMWVjLTgxZTktNGYyNmEzZmYyMGZi'
 webex_baseurl = 'https://webexapis.com/v1/messages'
 webex_headers = {
     'Authorization': 'Bearer {}'.format(webex_accesstoken),
@@ -30,7 +32,12 @@ def getOpeStatusLoopback():
         response_json = response.json()
         return "Loopback62070154 - Operational status is " + response_json["ietf-interfaces:interface"]["oper-status"]
 
+def setEnableLoopback():
+    response = requests.post(api_url_set, auth=basicauth, headers=headers, verify=False)
+
+
 def chatbot():
+    prev_enable = False
     webex_getParams = {
         "roomId": webex_roomid,
         "max": 1
@@ -45,7 +52,30 @@ def chatbot():
                     "roomId": webex_roomid,
                     "text": getOpeStatusLoopback()
                 }
-                response = requests.post(webex_baseurl, headers=webex_headers, json=webex_postParams)
+                status = webex_postParams["text"].split()[5]
+                
+                print("status: ", status)
+                if prev_enable == True:
+                    if (status == "down"):
+                        webex_postParams = {
+                            "roomId": webex_roomid,
+                            "text": "Enable Loopback62070154 - Now the Operational status is still down"
+                        }
+                        response = requests.post(webex_baseurl, headers=webex_headers, json=webex_postParams)
+                    if (status == "up"):
+                        webex_postParams = {
+                            "roomId": webex_roomid,
+                            "text": "Enable Loopback62070154 - Now the Operational status is up again"
+                        }
+                        response = requests.post(webex_baseurl, headers=webex_headers, json=webex_postParams)
+                else:
+                    prev_enable = False
+                    response = requests.post(webex_baseurl, headers=webex_headers, json=webex_postParams)
+                    if status == "down":
+                        setEnableLoopback()
+                        prev_enable = True
+
+                    
         time.sleep(1)
 
 chatbot()
